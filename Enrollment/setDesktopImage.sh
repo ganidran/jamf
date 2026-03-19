@@ -1,6 +1,9 @@
 #!/bin/bash
+#
+# Sets the desktop picture for the current user to a company image using
+# desktoppr. Requires a package that installs the image and desktoppr binary.
 
-# Frist requires a package to be deployed with the image along with desktoppr (https://github.com/scriptingosx/desktoppr)
+# First requires a package to be deployed with the image along with desktoppr (https://github.com/scriptingosx/desktoppr)
 
 ###########################
 ###### SET VARIABLES ######
@@ -15,9 +18,6 @@ uid=$(id -u "$loggedInUser")
 ###### DO THE THINGS ######
 ###########################
 
-# Set the desktop
 launchctl asuser "$uid" "$desktoppr" "$companyDesktop"
-
-# Cleanup
 sleep 1
 rm -r /usr/local/bin/desktoppr

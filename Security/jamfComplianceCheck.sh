@@ -1,9 +1,12 @@
 #!/bin/bash
+#
+# Reports whether the device is compliant with Jamf (JSS) by running
+# jamf checkJSSConnection and echoing compliant or not.
 
-# Check compliance status of a device
+# Run Jamf compliance check and capture output.
 complianceStatus=$(jamf checkJSSConnection)
 
-# Check if the device is compliant
+# Echo result based on compliance message.
 if [[ $complianceStatus == *"The system is compliant"* ]]; then
   echo "The device is compliant"
 else

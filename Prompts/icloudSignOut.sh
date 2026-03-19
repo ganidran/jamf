@@ -1,35 +1,31 @@
 #!/bin/bash
+#
+# If the user is signed into iCloud (per plist), shows a swiftDialog notice
+# instructing them to sign out via System Settings, then exits.
 
 ###########################
 ##### SET VARIABLES #######
 ###########################
 
-# Path to our dialog binary
 dialogPath='/usr/local/bin/dialog'
-# Determine the current user
 currentUser=$(stat -f "%Su" /dev/console)
-# Define paths for relevant plist files
 appleAccountsPlist="/Library/Preferences/SystemConfiguration/com.apple.accounts.exists.plist"
 mobileMePlist="/Users/$currentUser/Library/Preferences/MobileMeAccounts.plist"
-# Extract Account ID from MobileMeAccounts.plist using plutil and awk
+# Extract Account ID from MobileMe plist for display.
 accountId=$(plutil -convert xml1 -o - "$mobileMePlist" | awk '/<key>AccountID<\/key>/{getline; print}' | sed -n 's/.*<string>\(.*\)<\/string>.*/\1/p')
 
 ###########################
 ##### SYSTEM CHECKS #######
 ###########################
 
-# Check if Company images exist
-if [ -e /usr/local/jamf/company-icon.png ]
-then
+# Ensure company icon and swiftDialog are present.
+if [ -e /usr/local/jamf/company-icon.png ]; then
     echo "Company Images exist. Proceeding..."
 else
     echo "Company Images don't not exist. Installing..."
     jamf policy -event install-company-images
 fi
-
-# Check if the dialog exists
-if [ -e "$dialogPath" ]
-then
+if [ -e "$dialogPath" ]; then
     echo "swiftDialog exists. Re-installing..."
     jamf policy -event install-swiftdialog
 else
@@ -42,7 +38,7 @@ sleep 1
 ## CHECK THE PLIST FILE ###
 ###########################
 
-# Check if the iCloud plist files exist
+# If no iCloud sign-in indicated, exit without showing dialog.
 if [ -f "$appleAccountsPlist" ]; then
     appleAccountValue=$(/usr/libexec/PlistBuddy -c "Print :com.apple.account.AppleAccount.exists" "$appleAccountsPlist" 2>/dev/null)
     if [ "$appleAccountValue" == "1" ]; then
@@ -70,6 +66,6 @@ fi
 --quitkey l \
 --width 600 --height 300 \
 --icon caution \
---overlayicon /usr/local/jamf/company-icon.png        
+--overlayicon /usr/local/jamf/company-icon.png
 
 exit 0

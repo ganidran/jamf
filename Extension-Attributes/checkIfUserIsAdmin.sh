@@ -1,17 +1,18 @@
 #!/bin/bash
+#
+# Jamf extension attribute: reports whether the current console user is
+# a member of the local admin group (True or False).
 
-#Find the current user
+# Resolve the console user.
 username=$(stat -f "%Su" /dev/console)
 
 ###########################
 ##### CHECK IF ADMIN ######
 ###########################
 
-# Check if the logged-in user is an administrator
-if dseditgroup -o checkmember -m "$username" admin &>/dev/null
-then 
+if dseditgroup -o checkmember -m "$username" admin &>/dev/null; then
     echo "<result>`True`</result>"
-else 
+else
     echo "<result>`False`</result>"
 fi
 
